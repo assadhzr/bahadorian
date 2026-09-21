@@ -1,199 +1,66 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دفتر حساب و کتاب آنلاین شخصی</title>
-    <script src="https://tailwindcss.com"></script>
-    <style>
-        body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TRON USDT • Dashboard</title>
+<link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen antialiased">
+<body>
+<header class="top">
+  <div>
+    <div class="brand">TRON<span>USDT</span></div>
+    <small>کیف پول و تراکنش‌های TRC-20</small>
+  </div>
+  <button id="logout" class="ghost">خروج</button>
+</header>
 
-    <div id="loadingBar" class="bg-amber-500 text-white text-center py-2 text-xs font-medium hidden">
-        🔄 در حال هماهنگ‌سازی و دریافت اطلاعات زنده از گوگل شیت...
+<main class="container">
+  <section class="hero">
+    <div>
+      <p class="eyebrow">USDT • TRON (TRC-20)</p>
+      <h1>داشبورد حساب</h1>
+      <p>واریز و برداشت فقط روی شبکه TRON.</p>
     </div>
-
-    <div class="max-w-6xl mx-auto p-4 md:p-6">
-        <header class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm mb-6 flex justify-between items-center">
-            <div>
-                <h1 class="text-xl font-bold text-slate-900">دفتر حساب و کتاب آنلاین</h1>
-                <p class="text-xs text-slate-400 mt-1">متصل به پایگاه داده ابری گوگل درایو</p>
-            </div>
-            <div class="flex items-center gap-2 bg-emerald-50 px-3 py-1.5 rounded-xl">
-                <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span class="text-xs font-semibold text-emerald-700">اتصال ابری فعال</span>
-            </div>
-        </header>
-
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                <p class="text-xs text-slate-400 font-bold">کل مطالبات شما (طلب)</p>
-                <p id="totalReceivable" class="text-xl font-black text-emerald-600 mt-2">۰ افغانی</p>
-            </div>
-            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                <p class="text-xs text-slate-400 font-bold">کل بدهی‌های شما</p>
-                <p id="totalPayable" class="text-xl font-black text-rose-600 mt-2">۰ افغانی</p>
-            </div>
-            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                <p class="text-xs text-slate-400 font-bold">تعداد کل افراد ثبت شده</p>
-                <p id="totalCustomers" class="text-xl font-black text-slate-700 mt-2">۰ نفر</p>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm h-fit">
-                <h2 class="text-sm font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100">ثبت تراکنش یا شخص جدید</h2>
-                <form id="customerForm" onsubmit="addCustomer(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">نام و نام خانوادگی *</label>
-                        <input type="text" id="name" required class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">شماره تماس (اختیاری)</label>
-                        <input type="tel" id="phone" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500 text-left" dir="ltr">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">وضعیت حساب شخص</label>
-                        <select id="statusType" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500 bg-white">
-                            <option value="none">تسویه / بی‌حساب</option>
-                            <option value="bidehkar">بدهکار است (به شما باید پول بدهد)</option>
-                            <option value="bestankar">بستانکار است (شما باید به او پول بدهید)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">مبلغ مانده حساب (افغانی)</label>
-                        <input type="number" id="amount" value="0" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1">بابت / توضیحات</label>
-                        <input type="text" id="note" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500">
-                    </div>
-                    <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2.5 rounded-lg transition-colors shadow-sm mt-2">
-                        ذخیره و هماهنگ‌سازی ابری
-                    </button>
-                </form>
-            </div>
-
-            <div class="lg:col-span-2 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 pb-2 border-b border-slate-100">
-                    <h2 class="text-sm font-bold text-slate-800">لیست افراد و وضعیت تراز مالی</h2>
-                    <input type="text" id="search" oninput="renderCustomers()" placeholder="جستجو نام یا شماره..." class="border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-blue-500 w-full sm:w-48">
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full text-right text-xs">
-                        <thead>
-                            <tr class="bg-slate-50 text-slate-400 font-bold border-b border-slate-200">
-                                <th class="p-3">نام شخص</th>
-                                <th class="p-3">شماره تماس</th>
-                                <th class="p-3">وضعیت مالی</th>
-                                <th class="p-3">مانده طلب/بدهی</th>
-                                <th class="p-3 text-center">عملیات</th>
-                            </tr>
-                        </thead>
-                        <tbody id="customerTableBody" class="divide-y divide-slate-100 text-slate-600">
-                        </tbody>
-                    </table>
-                    <div id="emptyState" class="text-center py-12 text-slate-400 font-medium">
-                        در حال بارگذاری اطلاعات زنده از گوگل شیت...
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="balance-card">
+      <span>موجودی قابل استفاده</span>
+      <strong id="balance">0.000000 USDT</strong>
     </div>
+  </section>
 
-    <script>
-        // ⚠️ مهم: لینک گوگل اسکریپت خود را دقیقاً به جای متن داخل گیومه پایین قرار دهید
-        const GOOGLE_SCRIPT_URL = "لینک_گوگل_اسکریپت_شما";
+  <section class="grid">
+    <article class="card">
+      <h2>واریز USDT</h2>
+      <p class="muted">فقط USDT روی شبکه TRON به این آدرس ارسال شود.</p>
+      <div class="address" id="depositAddress">در حال دریافت...</div>
+      <button id="copyAddress">کپی آدرس</button>
+      <p class="warning">ارسال دارایی روی شبکه یا توکن اشتباه ممکن است باعث از دست رفتن دارایی شود.</p>
+    </article>
 
-        let customers = [];
+    <article class="card">
+      <h2>برداشت USDT</h2>
+      <label>مبلغ</label>
+      <input id="withdrawAmount" type="number" min="0" step="0.000001" placeholder="مثلاً 50">
+      <label>آدرس TRON مقصد</label>
+      <input id="withdrawAddress" placeholder="T...">
+      <button id="withdrawBtn">ثبت درخواست برداشت</button>
+      <div id="withdrawMsg" class="msg"></div>
+    </article>
+  </section>
 
-        async function fetchCustomers() {
-            if(GOOGLE_SCRIPT_URL === "لینک_گوگل_اسکریپت_شما") {
-                document.getElementById('emptyState').innerText = "لطفاً ابتدا لینک گوگل اسکریپت خود را تنظیم کنید.";
-                return;
-            }
-            document.getElementById('loadingBar').classList.remove('hidden');
-            try {
-                const response = await fetch(GOOGLE_SCRIPT_URL);
-                const data = await response.json();
-                customers = data.customers || data;
-                updateStats();
-                renderCustomers();
-            } catch (error) {
-                console.error("خطا:", error);
-                document.getElementById('emptyState').innerText = "خطا در دریافت اطلاعات از سرور گوگل.";
-            } finally {
-                document.getElementById('loadingBar').classList.add('hidden');
-            }
-        }
+  <section class="card">
+    <div class="row"><h2>تراکنش‌ها</h2><button id="refresh" class="ghost">به‌روزرسانی</button></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>نوع</th><th>مبلغ</th><th>وضعیت</th><th>TXID</th><th>تاریخ</th></tr></thead>
+        <tbody id="transactions"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
 
-        async function addCustomer(e) {
-            e.preventDefault();
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = true;
-            submitBtn.innerText = "در حال ذخیره‌سازی...";
-
-            const newCustomer = {
-                action: "add",
-                sheet: "customers",
-                id: Date.now().toString(),
-                name: document.getElementById('name').value,
-                phone: document.getElementById('phone').value || '-',
-                statusType: document.getElementById('statusType').value,
-                amount: parseFloat(document.getElementById('amount').value) || 0,
-                note: document.getElementById('note').value || '-'
-            };
-
-            try {
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: "POST",
-                    mode: "no-cors",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(newCustomer)
-                });
-                document.getElementById('customerForm').reset();
-                setTimeout(fetchCustomers, 1500); 
-            } catch (error) {
-                alert("خطا در هماهنگ‌سازی.");
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = "ذخیره و هماهنگ‌سازی ابری";
-            }
-        }
-
-        async function deleteCustomer(id) {
-            if(!confirm('آیا از حذف مطمئن هستید؟')) return;
-            document.getElementById('loadingBar').classList.remove('hidden');
-            try {
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: "POST",
-                    mode: "no-cors",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ action: "delete", sheet: "customers", id: id.toString() })
-                });
-                setTimeout(fetchCustomers, 1500);
-            } catch (error) {
-                alert("خطا در حذف.");
-                document.getElementById('loadingBar').classList.add('hidden');
-            }
-        }
-
-        function updateStats() {
-            let receivable = 0;
-            let payable = 0;
-            if (Array.isArray(customers)) {
-                customers.forEach(c => {
-بااحتیاط از کد استفاده کنید.if(c.statusType === 'bidehkar') receivable += Number(c.amount || 0);if(c.statusType === 'bestankar') payable += Number(c.amount || 0);});document.getElementById('totalReceivable').innerText = receivable.toLocaleString() + ' افغانی';document.getElementById('totalPayable').innerText = payable.toLocaleString() + ' افغانی';document.getElementById('totalCustomers').innerText = customers.length + ' نفر';}} function renderCustomers() {const tbody = document.getElementById('customerTableBody');const searchVal = document.getElementById('search').value.toLowerCase();tbody.innerHTML = ''; if (!Array.isArray(customers) || customers.length === 0) {document.getElementById('emptyState').classList.remove('hidden');document.getElementById('emptyState').innerText = "هیچ مشتری یافت نشد.";return;} const filtered = customers.filter(c =>(c.name && c.name.toLowerCase().includes(searchVal)) || (c.phone && c.phone.includes(searchVal))); if(filtered.length === 0) {document.getElementById('emptyState').classList.remove('hidden');document.getElementById('emptyState').innerText = "موردی پیدا نشد.";return;} document.getElementById('emptyState').classList.add('hidden'); filtered.forEach(c => {let statusBadge = 'تسویه';let amountClass = 'text-slate-600';if(c.statusType === 'bidehkar') {statusBadge = 'بدهکار (طلب)';amountClass = 'text-emerald-600 font-bold';} else if(c.statusType === 'bestankar') {statusBadge = 'بستانکار (بدهی)';amountClass = 'text-rose-600 font-bold';} const tr = document.createElement('tr');tr.className = "hover:bg-slate-50/80 transition-colors border-b border-slate-100";const subNote = (c.note && c.note !== '-') ? <p class="text-[10px] text-slate-400 font-normal mt-0.5">بابت: ${c.note}</p> : '';const numAmount = Number(c.amount || 0).toLocaleString(); tr.innerHTML = ` \[c.name\]{subNote} ${c.phone} ${statusBadge} ${numAmount} افغانی `;tbody.appendChild(tr);});}fetchCustomers(); 
-5. در خط **۱۳۶** این کد، کلمه `لینک_گوگل_اسکریپت_شما` را پاک کنید و لینک وب‌اپلیکیشن گوگل خود را بگذارید.
-6. در پایین صفحه دکمه سبز رنگ **Commit changes** (ذخیره تغییرات) را بزنید.
-
-حالا لینک گیت‌هاب پیج شما کاملاً زنده، آنلاین و بدون مشکل به کار خواهد افتاد. 
-
-<FollowUp>
-پس از قرار دادن کد بالا مستقیماً در سایت گیت‌هاب، لطفاً بررسی کنید و بگویید:
-* آیا اکنون **لیست مشتریان سابق و مبالغ به افغانی** در آدرس آنلاین شما ظاهر شد؟
-* آیا مایلید نحوه **دسترسی سریع به این صفحه از طریق آیکون میانبر روی صفحه اصلی موبایل** را برایتان بنویسم؟
-</FollowUp>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
