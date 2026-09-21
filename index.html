@@ -3,218 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سیستم پیشرفته حسابداری مشتریان (افغانی)</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>دفتر حساب و کتاب آنلاین شخصی</title>
+    <script src="https://tailwindcss.com"></script>
     <style>
-        body { 
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-        }
+        body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen antialiased">
 
-    <!-- نوار هماهنگ‌سازی زنده -->
     <div id="loadingBar" class="bg-amber-500 text-white text-center py-2 text-xs font-medium hidden">
-        🔄 در حال دریافت و بروزرسانی اطلاعات از گوگل شیت...
+        🔄 در حال هماهنگ‌سازی و دریافت اطلاعات زنده از گوگل شیت...
     </div>
 
     <div class="max-w-6xl mx-auto p-4 md:p-6">
-        
-        <!-- بخش اول: نمای اصلی (لیست مشتریان) -->
-        <div id="mainView" class="space-y-6">
-            <header class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
-                <div>
-                    <h1 class="text-xl font-bold text-slate-900">سامانه حساب و کتاب مشتریان</h1>
-                    <p class="text-xs text-slate-400 mt-1">نسخه پیشرفته متصل به گوگل درایو (واحد: افغانی)</p>
-                </div>
-                <div class="flex items-center gap-2 bg-emerald-50 px-3 py-1.5 rounded-xl">
-                    <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span class="text-xs font-semibold text-emerald-700">اتصال ابری فعال</span>
-                </div>
-            </header>
-
-            <!-- آمار کل حساب‌ها -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                    <p class="text-xs text-slate-400 font-bold">کل مطالبات (طلب کلی شما)</p>
-                    <p id="totalReceivable" class="text-xl font-black text-emerald-600 mt-2">۰ افغانی</p>
-                </div>
-                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                    <p class="text-xs text-slate-400 font-bold">کل بدهی‌های شما (بستانکاران)</p>
-                    <p id="totalPayable" class="text-xl font-black text-rose-600 mt-2">۰ افغانی</p>
-                </div>
-                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                    <p class="text-xs text-slate-400 font-bold">تعداد کل مشتریان</p>
-                    <p id="totalCustomers" class="text-xl font-black text-slate-700 mt-2">۰ نفر</p>
-                </div>
+        <header class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm mb-6 flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold text-slate-900">دفتر حساب و کتاب آنلاین</h1>
+                <p class="text-xs text-slate-400 mt-1">متصل به پایگاه داده ابری گوگل درایو</p>
             </div>
+            <div class="flex items-center gap-2 bg-emerald-50 px-3 py-1.5 rounded-xl">
+                <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-xs font-semibold text-emerald-700">اتصال ابری فعال</span>
+            </div>
+        </header>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- فرم ثبت مشتری جدید -->
-                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm h-fit">
-                    <h2 class="text-sm font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100">ثبت پرونده مشتری جدید</h2>
-                    <form id="customerForm" onsubmit="addCustomer(event)" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">نام و نام خانوادگی مشتری *</label>
-                            <input type="text" id="custName" required class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">شماره تماس (اختیاری)</label>
-                            <input type="tel" id="custPhone" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500 text-left" dir="ltr">
-                        </div>
-                        <button type="submit" id="submitCustBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2.5 rounded-lg transition-colors shadow-sm mt-2">
-                            ایجاد حساب مشتری
-                        </button>
-                    </form>
-                </div>
-
-                <!-- جدول لیست مشتریان -->
-                <div class="lg:col-span-2 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 pb-2 border-b border-slate-100">
-                        <h2 class="text-sm font-bold text-slate-800">لیست مشتریان و تراز نهایی حساب</h2>
-                        <input type="text" id="search" oninput="renderCustomers()" placeholder="جستجو مشتری..." class="border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-blue-500 w-full sm:w-48">
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-right text-xs">
-                            <thead>
-                                <tr class="bg-slate-50 text-slate-400 font-bold border-b border-slate-200">
-                                    <th class="p-3">نام مشتری</th>
-                                    <th class="p-3">شماره تماس</th>
-                                    <th class="p-3">وضعیت حساب</th>
-                                    <th class="p-3">تراز نهایی (افغانی)</th>
-                                    <th class="p-3 text-center">عملیات</th>
-                                </tr>
-                            </thead>
-                            <tbody id="customerTableBody" class="divide-y divide-slate-100 text-slate-600">
-                                <!-- اطلاعات مشتریان -->
-                            </tbody>
-                        </table>
-                        <div id="emptyState" class="text-center py-12 text-slate-400 font-medium">
-                            در حال بارگذاری اطلاعات زنده از گوگل شیت...
-                        </div>
-                    </div>
-                </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                <p class="text-xs text-slate-400 font-bold">کل مطالبات شما (طلب)</p>
+                <p id="totalReceivable" class="text-xl font-black text-emerald-600 mt-2">۰ افغانی</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                <p class="text-xs text-slate-400 font-bold">کل بدهی‌های شما</p>
+                <p id="totalPayable" class="text-xl font-black text-rose-600 mt-2">۰ افغانی</p>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                <p class="text-xs text-slate-400 font-bold">تعداد کل افراد ثبت شده</p>
+                <p id="totalCustomers" class="text-xl font-black text-slate-700 mt-2">۰ نفر</p>
             </div>
         </div>
 
-        <!-- بخش دوم: نمای جزئیات ریز تراکنش‌های هر مشتری (صفحه اختصاصی مشتری) -->
-        <div id="detailView" class="space-y-6 hidden">
-            <header class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                    <button onclick="showMainView()" class="text-xs text-blue-600 hover:text-blue-800 font-bold mb-2 inline-flex items-center gap-1">
-                        ← بازگشت به لیست کل مشتریان
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm h-fit">
+                <h2 class="text-sm font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100">ثبت تراکنش یا شخص جدید</h2>
+                <form id="customerForm" onsubmit="addCustomer(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">نام و نام خانوادگی *</label>
+                        <input type="text" id="name" required class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">شماره تماس (اختیاری)</label>
+                        <input type="tel" id="phone" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500 text-left" dir="ltr">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">وضعیت حساب شخص</label>
+                        <select id="statusType" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500 bg-white">
+                            <option value="none">تسویه / بی‌حساب</option>
+                            <option value="bidehkar">بدهکار است (به شما باید پول بدهد)</option>
+                            <option value="bestankar">بستانکار است (شما باید به او پول بدهید)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">مبلغ مانده حساب (افغانی)</label>
+                        <input type="number" id="amount" value="0" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">بابت / توضیحات</label>
+                        <input type="text" id="note" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500">
+                    </div>
+                    <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2.5 rounded-lg transition-colors shadow-sm mt-2">
+                        ذخیره و هماهنگ‌سازی ابری
                     </button>
-                    <h1 id="detailTitle" class="text-xl font-bold text-slate-900">پرونده مالی: نام مشتری</h1>
-                    <p id="detailPhone" class="text-xs text-slate-400 mt-1">شماره تماس: -</p>
-                </div>
-                <div class="bg-slate-100 px-4 py-3 rounded-xl text-left sm:text-right w-full sm:w-auto">
-                    <p class="text-[10px] text-slate-400 font-bold">تراز خالص این مشتری</p>
-                    <p id="detailBalance" class="text-lg font-black text-slate-700 mt-1">۰ افغانی</p>
-                </div>
-            </header>
+                </form>
+            </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- فرم ثبت بدهی یا طلب برای این مشتری مشخص -->
-                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm h-fit">
-                    <h2 class="text-sm font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100">ثبت داد و ستد جدید</h2>
-                    <form id="transactionForm" onsubmit="addTransaction(event)" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">نوع تراکنش</label>
-                            <select id="txType" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500 bg-white">
-                                <option value="bidehkar">مشتری بدهکار شد (جنس برده / طلبکار شدید)</option>
-                                <option value="bestankar">مشتری بستانکار شد (پول آورده / تسویه کرده)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">مبلغ (افغانی) *</label>
-                            <input type="number" id="txAmount" required class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-1">بابت / شرح جنس</label>
-                            <input type="text" id="txNote" required placeholder="مثلاً: بابت برنج، آرد، یا حواله نقد" class="w-full border border-slate-200 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500">
-                        </div>
-                        <button type="submit" id="submitTxBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium py-2.5 rounded-lg transition-colors shadow-sm">
-                            ثبت تراکنش در پرونده مشتری
-                        </button>
-                    </form>
+            <div class="lg:col-span-2 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 pb-2 border-b border-slate-100">
+                    <h2 class="text-sm font-bold text-slate-800">لیست افراد و وضعیت تراز مالی</h2>
+                    <input type="text" id="search" oninput="renderCustomers()" placeholder="جستجو نام یا شماره..." class="border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-blue-500 w-full sm:w-48">
                 </div>
 
-                <!-- جدول زیر ریز تراکنش‌های مشتری -->
-                <div class="lg:col-span-2 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-                    <h2 class="text-sm font-bold text-slate-800 mb-4 pb-2 border-b border-slate-100">سابقه تراکنش‌ها و اقلام ثبت شده</h2>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-right text-xs">
-                            <thead>
-                                <tr class="bg-slate-50 text-slate-400 font-bold border-b border-slate-200">
-                                    <th class="p-3">تاریخ ثبت</th>
-                                    <th class="p-3">بابت / توضیحات</th>
-                                    <th class="p-3">بدهکار (افغانی)</th>
-                                    <th class="p-3">بستانکار (افغانی)</th>
-                                    <th class="p-3 text-center">عملیات</th>
-                                </tr>
-                            </thead>
-                            <tbody id="txTableBody" class="divide-y divide-slate-100 text-slate-600">
-                                <!-- تراکنش‌های مشتری -->
-                            </tbody>
-                        </table>
-                        <div id="txEmptyState" class="text-center py-12 text-slate-400 font-medium">
-                            هیچ داد و ستدی برای این مشتری ثبت نشده است.
-                        </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right text-xs">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-400 font-bold border-b border-slate-200">
+                                <th class="p-3">نام شخص</th>
+                                <th class="p-3">شماره تماس</th>
+                                <th class="p-3">وضعیت مالی</th>
+                                <th class="p-3">مانده طلب/بدهی</th>
+                                <th class="p-3 text-center">عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customerTableBody" class="divide-y divide-slate-100 text-slate-600">
+                        </tbody>
+                    </table>
+                    <div id="emptyState" class="text-center py-12 text-slate-400 font-medium">
+                        در حال بارگذاری اطلاعات زنده از گوگل شیت...
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 
     <script>
-        // ⚠️ لینک وب‌اپلیکیشن گوگل اسکریپت خود را در خط زیر قرار دهید
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzCrqRnCYd99Z4IBkMbhGfpNk6kfnTTGwUenVYOVEjqeuia7Zv-2gv3k5rAg0a0J3KfKw/exec";
+        // ⚠️ مهم: لینک گوگل اسکریپت خود را دقیقاً به جای متن داخل گیومه پایین قرار دهید
+        const GOOGLE_SCRIPT_URL = "لینک_گوگل_اسکریپت_شما";
 
-        let serverData = { customers: [], transactions: [] };
-        let activeCustomerId = null;
+        let customers = [];
 
-        // دریافت کل اطلاعات آنلاین (مشتریان + تراکنش‌ها)
-        async function fetchData() {
-            if(GOOGLE_SCRIPT_URL === "https://script.google.com/macros/s/AKfycbzCrqRnCYd99Z4IBkMbhGfpNk6kfnTTGwUenVYOVEjqeuia7Zv-2gv3k5rAg0a0J3KfKw/exec") {
-                document.getElementById('emptyState').innerText = "لطفاً لینک گوگل اسکریپت را در فایل کد قرار دهید تا سیستم فعال شود.";
+        async function fetchCustomers() {
+            if(GOOGLE_SCRIPT_URL === "لینک_گوگل_اسکریپت_شما") {
+                document.getElementById('emptyState').innerText = "لطفاً ابتدا لینک گوگل اسکریپت خود را تنظیم کنید.";
                 return;
             }
             document.getElementById('loadingBar').classList.remove('hidden');
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL);
-                serverData = await response.json();
-                
-                // اگر فرمت داده از سرور کامل نبود آرایه‌ها را مقداردهی کن
-                if(!serverData.customers) serverData.customers = [];
-                if(!serverData.transactions) serverData.transactions = [];
-
-                calculateStats();
+                const data = await response.json();
+                customers = data.customers || data;
+                updateStats();
                 renderCustomers();
-                if(activeCustomerId) {
-                    renderCustomerDetails(activeCustomerId);
-                }
             } catch (error) {
-                console.error("خطا در بارگذاری:", error);
+                console.error("خطا:", error);
+                document.getElementById('emptyState').innerText = "خطا در دریافت اطلاعات از سرور گوگل.";
             } finally {
                 document.getElementById('loadingBar').classList.add('hidden');
             }
         }
 
-        // ثبت مشتری جدید
         async function addCustomer(e) {
             e.preventDefault();
-            const submitBtn = document.getElementById('submitCustBtn');
+            const submitBtn = document.getElementById('submitBtn');
             submitBtn.disabled = true;
-            submitBtn.innerText = "در حال ایجاد حساب...";
+            submitBtn.innerText = "در حال ذخیره‌سازی...";
 
-            const newCust = {
-                sheet: "customers",
+            const newCustomer = {
                 action: "add",
-                id: "C-" + Date.now().toString(),
-                name: document.getElementById('custName').value,
-                phone: document.getElementById('custPhone').value || '-'
+                sheet: "customers",
+                id: Date.now().toString(),
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value || '-',
+                statusType: document.getElementById('statusType').value,
+                amount: parseFloat(document.getElementById('amount').value) || 0,
+                note: document.getElementById('note').value || '-'
             };
 
             try {
@@ -222,237 +152,48 @@
                     method: "POST",
                     mode: "no-cors",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(newCust)
+                    body: JSON.stringify(newCustomer)
                 });
                 document.getElementById('customerForm').reset();
-                setTimeout(fetchData, 1500);
+                setTimeout(fetchCustomers, 1500); 
             } catch (error) {
-                alert("خطا در ثبت مشتری.");
+                alert("خطا در هماهنگ‌سازی.");
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerText = "ایجاد حساب مشتری";
+                submitBtn.innerText = "ذخیره و هماهنگ‌سازی ابری";
             }
         }
 
-        // ثبت تراکنش جدید برای مشتری فعال
-        async function addTransaction(e) {
-            e.preventDefault();
-            const submitBtn = document.getElementById('submitTxBtn');
-            submitBtn.disabled = true;
-            submitBtn.innerText = "در حال ثبت تراکنش...";
-
-            const newTx = {
-                sheet: "transactions",
-                action: "add",
-                id: "T-" + Date.now().toString(),
-                customerId: activeCustomerId,
-                type: document.getElementById('txType').value,
-                amount: parseFloat(document.getElementById('txAmount').value) || 0,
-                note: document.getElementById('txNote').value,
-                date: new Date().toLocaleDateString('fa-AF')
-            };
-
-            try {
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: "POST",
-                    mode: "no-cors",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(newTx)
-                });
-                document.getElementById('transactionForm').reset();
-                setTimeout(fetchData, 1500);
-            } catch (error) {
-                alert("خطا در ثبت تراکنش.");
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = "ثبت تراکنش در پرونده مشتری";
-            }
-        }
-
-        // حذف مشتری
-        async function deleteCustomer(id, event) {
-            event.stopPropagation(); // جلوگیری از باز شدن صفحه مشتری هنگام کلیک روی دکمه حذف
-            if(!confirm('با حذف مشتری، تمام تراکنش‌های او نیز حذف خواهند شد. مطمئن هستید؟')) return;
+        async function deleteCustomer(id) {
+            if(!confirm('آیا از حذف مطمئن هستید؟')) return;
             document.getElementById('loadingBar').classList.remove('hidden');
-
             try {
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: "POST",
                     mode: "no-cors",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ sheet: "customers", action: "delete", id: id })
+                    body: JSON.stringify({ action: "delete", sheet: "customers", id: id.toString() })
                 });
-                setTimeout(fetchData, 1500);
+                setTimeout(fetchCustomers, 1500);
             } catch (error) {
                 alert("خطا در حذف.");
+                document.getElementById('loadingBar').classList.add('hidden');
             }
         }
 
-        // حذف یک تراکنش
-        async function deleteTransaction(id) {
-            if(!confirm('آیا از حذف این قلم تراکنش مطمئن هستید؟')) return;
-            document.getElementById('loadingBar').classList.remove('hidden');
+        function updateStats() {
+            let receivable = 0;
+            let payable = 0;
+            if (Array.isArray(customers)) {
+                customers.forEach(c => {
+بااحتیاط از کد استفاده کنید.if(c.statusType === 'bidehkar') receivable += Number(c.amount || 0);if(c.statusType === 'bestankar') payable += Number(c.amount || 0);});document.getElementById('totalReceivable').innerText = receivable.toLocaleString() + ' افغانی';document.getElementById('totalPayable').innerText = payable.toLocaleString() + ' افغانی';document.getElementById('totalCustomers').innerText = customers.length + ' نفر';}} function renderCustomers() {const tbody = document.getElementById('customerTableBody');const searchVal = document.getElementById('search').value.toLowerCase();tbody.innerHTML = ''; if (!Array.isArray(customers) || customers.length === 0) {document.getElementById('emptyState').classList.remove('hidden');document.getElementById('emptyState').innerText = "هیچ مشتری یافت نشد.";return;} const filtered = customers.filter(c =>(c.name && c.name.toLowerCase().includes(searchVal)) || (c.phone && c.phone.includes(searchVal))); if(filtered.length === 0) {document.getElementById('emptyState').classList.remove('hidden');document.getElementById('emptyState').innerText = "موردی پیدا نشد.";return;} document.getElementById('emptyState').classList.add('hidden'); filtered.forEach(c => {let statusBadge = 'تسویه';let amountClass = 'text-slate-600';if(c.statusType === 'bidehkar') {statusBadge = 'بدهکار (طلب)';amountClass = 'text-emerald-600 font-bold';} else if(c.statusType === 'bestankar') {statusBadge = 'بستانکار (بدهی)';amountClass = 'text-rose-600 font-bold';} const tr = document.createElement('tr');tr.className = "hover:bg-slate-50/80 transition-colors border-b border-slate-100";const subNote = (c.note && c.note !== '-') ? <p class="text-[10px] text-slate-400 font-normal mt-0.5">بابت: ${c.note}</p> : '';const numAmount = Number(c.amount || 0).toLocaleString(); tr.innerHTML = ` \[c.name\]{subNote} ${c.phone} ${statusBadge} ${numAmount} افغانی `;tbody.appendChild(tr);});}fetchCustomers(); 
+5. در خط **۱۳۶** این کد، کلمه `لینک_گوگل_اسکریپت_شما` را پاک کنید و لینک وب‌اپلیکیشن گوگل خود را بگذارید.
+6. در پایین صفحه دکمه سبز رنگ **Commit changes** (ذخیره تغییرات) را بزنید.
 
-            try {
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: "POST",
-                    mode: "no-cors",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ sheet: "transactions", action: "delete", id: id })
-                });
-                setTimeout(fetchData, 1500);
-            } catch (error) {
-                alert("خطا در حذف تراکنش.");
-            }
-        }
+حالا لینک گیت‌هاب پیج شما کاملاً زنده، آنلاین و بدون مشکل به کار خواهد افتاد. 
 
-        // محاسبه حساب کتاب کلی و تراز هر مشتری
-        let customerBalances = {};
-        function calculateStats() {
-            customerBalances = {};
-            serverData.customers.forEach(c => {
-                customerBalances[c.id] = 0;
-            });
-
-            serverData.transactions.forEach(t => {
-                if(customerBalances[t.customerId] !== undefined) {
-                    if(t.type === 'bidehkar') {
-                        customerBalances[t.customerId] += Number(t.amount);
-                    } else if(t.type === 'bestankar') {
-                        customerBalances[t.customerId] -= Number(t.amount);
-                    }
-                }
-            });
-
-            let totalReceivable = 0;
-            let totalPayable = 0;
-
-            Object.values(customerBalances).forEach(bal => {
-                if(bal > 0) totalReceivable += bal;
-                if(bal < 0) totalPayable += Math.abs(bal);
-            });
-
-            document.getElementById('totalReceivable').innerText = totalReceivable.toLocaleString() + ' افغانی';
-            document.getElementById('totalPayable').innerText = totalPayable.toLocaleString() + ' افغانی';
-            document.getElementById('totalCustomers').innerText = serverData.customers.length + ' نفر';
-        }
-
-        // رندر کردن لیست مشتریان در صفحه اصلی
-        function renderCustomers() {
-            const tbody = document.getElementById('customerTableBody');
-            const searchVal = document.getElementById('search').value.toLowerCase();
-            tbody.innerHTML = '';
-
-            const filtered = serverData.customers.filter(c => c.name.toLowerCase().includes(searchVal));
-
-            if(filtered.length === 0) {
-                document.getElementById('emptyState').classList.remove('hidden');
-                document.getElementById('emptyState').innerText = "مشتری یافت نشد یا لیست خالی است.";
-                return;
-            }
-            document.getElementById('emptyState').classList.add('hidden');
-
-            filtered.forEach(c => {
-                const bal = customerBalances[c.id] || 0;
-                let statusBadge = '<span class="px-2 py-0.5 rounded text-[11px] bg-slate-100 text-slate-500">تسویه</span>';
-                let amountClass = 'text-slate-600';
-                
-                if(bal > 0) {
-                    statusBadge = '<span class="px-2 py-0.5 rounded text-[11px] bg-emerald-50 text-emerald-600 font-bold">بدهکار (طلب شما)</span>';
-                    amountClass = 'text-emerald-600 font-bold';
-                } else if(bal < 0) {
-                    statusBadge = '<span class="px-2 py-0.5 rounded text-[11px] bg-rose-50 text-rose-600 font-bold">بستانکار (بدهی شما)</span>';
-                    amountClass = 'text-rose-600 font-bold';
-                }
-
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-blue-50/50 cursor-pointer transition-colors border-b border-slate-100";
-                tr.setAttribute("onclick", `openCustomerProfile('${c.id}')`);
-                tr.innerHTML = `
-                    <td class="p-3 font-semibold text-slate-900">${c.name}</td>
-                    <td class="p-3 text-slate-500 text-right dir-ltr">${c.phone}</td>
-                    <td class="p-3">${statusBadge}</td>
-                    <td class="p-3 ${amountClass}">${Math.abs(bal).toLocaleString()} افغانی</td>
-                    <td class="p-3 text-center">
-                        <button onclick="deleteCustomer('${c.id}', event)" class="text-rose-500 hover:bg-rose-50 px-2 py-1 rounded-md font-medium">حذف حساب</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        // باز کردن صفحه اختصاصی مشتری
-        function openCustomerProfile(id) {
-            activeCustomerId = id;
-            document.getElementById('mainView').classList.add('hidden');
-            document.getElementById('detailView').classList.remove('hidden');
-            renderCustomerDetails(id);
-        }
-
-        function showMainView() {
-            activeCustomerId = null;
-            document.getElementById('detailView').classList.add('hidden');
-            document.getElementById('mainView').classList.remove('hidden');
-            renderCustomers();
-        }
-
-        // رندر کردن جزئیات صفحه اختصاصی مشتری
-        function renderCustomerDetails(id) {
-            const customer = serverData.customers.find(c => c.id === id);
-            if(!customer) return;
-
-            document.getElementById('detailTitle').innerText = "پرونده مالی: " + customer.name;
-            document.getElementById('detailPhone').innerText = "شماره تماس: " + customer.phone;
-
-            const bal = customerBalances[id] || 0;
-            const balEl = document.getElementById('detailBalance');
-            if(bal > 0) {
-                balEl.innerText = bal.toLocaleString() + " افغانی (طلب شما)";
-                balEl.className = "text-lg font-black text-emerald-600 mt-1";
-            } else if(bal < 0) {
-                balEl.innerText = Math.abs(bal).toLocaleString() + " افغانی (بدهی شما)";
-                balEl.className = "text-lg font-black text-rose-600 mt-1";
-            } else {
-                balEl.innerText = "۰ افغانی (تسویه کاملاً)";
-                balEl.className = "text-lg font-black text-slate-600 mt-1";
-            }
-
-            const tbody = document.getElementById('txTableBody');
-            tbody.innerHTML = '';
-
-            const txs = serverData.transactions.filter(t => t.customerId === id);
-
-            if(txs.length === 0) {
-                document.getElementById('txEmptyState').classList.remove('hidden');
-                return;
-            }
-            document.getElementById('txEmptyState').classList.add('hidden');
-
-            txs.forEach(t => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 border-b border-slate-100";
-                
-                let bidehkarSpan = "-";
-                let bestankarSpan = "-";
-
-                if(t.type === 'bidehkar') bidehkarSpan = `<span class="text-emerald-600 font-bold">${Number(t.amount).toLocaleString()}</span>`;
-                if(t.type === 'bestankar') bestankarSpan = `<span class="text-rose-600 font-bold">${Number(t.amount).toLocaleString()}</span>`;
-
-                tr.innerHTML = `
-                    <td class="p-3 text-slate-400">${t.date || '-'}</td>
-                    <td class="p-3 font-medium text-slate-800">${t.note}</td>
-                    <td class="p-3">${bidehkarSpan}</td>
-                    <td class="p-3">${bestankarSpan}</td>
-                    <td class="p-3 text-center">
-                        <button onclick="deleteTransaction('${t.id}')" class="text-xs text-rose-500 hover:bg-rose-50 px-2 py-1 rounded">حذف قلم</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        // بارگذاری اولیه اطلاعات آنلاین
-        fetchData();
-    </script>
-</body>
-</html>
+<FollowUp>
+پس از قرار دادن کد بالا مستقیماً در سایت گیت‌هاب، لطفاً بررسی کنید و بگویید:
+* آیا اکنون **لیست مشتریان سابق و مبالغ به افغانی** در آدرس آنلاین شما ظاهر شد؟
+* آیا مایلید نحوه **دسترسی سریع به این صفحه از طریق آیکون میانبر روی صفحه اصلی موبایل** را برایتان بنویسم؟
+</FollowUp>
