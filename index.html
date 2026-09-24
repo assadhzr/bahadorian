@@ -3,64 +3,207 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TRON USDT • Dashboard</title>
-<link rel="stylesheet" href="style.css">
+<title>دفتر مشتریان | GitHub</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f7fb;color:#172033;font-family:Tahoma,Arial,sans-serif}
+:root{--p:#2563eb;--p2:#1d4ed8;--card:#fff;--line:#e5e7eb;--muted:#64748b;--red:#dc2626;--green:#059669}
+.wrap{max-width:1150px;margin:auto;padding:16px}.hero{background:linear-gradient(135deg,#172554,#2563eb);color:white;border-radius:24px;padding:25px;box-shadow:0 15px 35px #0f172a18;margin-bottom:16px}.hero h1{margin:0 0 7px;font-size:27px}.hero p{margin:0;opacity:.9}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px;box-shadow:0 8px 25px #0f172a08}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.full{grid-column:1/-1}label{display:block;font-weight:bold;margin-bottom:6px}input,textarea,select{width:100%;border:1px solid #d7dee8;border-radius:11px;padding:12px;font:inherit;background:white;outline:0}input:focus,textarea:focus{border-color:var(--p);box-shadow:0 0 0 3px #2563eb18}textarea{min-height:80px}
+button{border:0;border-radius:11px;padding:11px 15px;font:inherit;font-weight:bold;cursor:pointer}.primary{background:var(--p);color:#fff}.primary:hover{background:var(--p2)}.gray{background:#eef2f7;color:#334155}.red{background:#fee2e2;color:#991b1b}.green{background:#d1fae5;color:#065f46}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:14px}.stat small{color:var(--muted)}.stat b{display:block;font-size:21px;margin-top:5px}
+.toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}.search{max-width:450px;flex:1}
+.table{overflow:auto}table{border-collapse:collapse;width:100%;min-width:760px}th,td{padding:12px 9px;border-bottom:1px solid var(--line);text-align:right;vertical-align:middle}th{background:#f8fafc}.pill{padding:5px 9px;border-radius:20px;font-size:12px}.debt{background:#fee2e2;color:#991b1b}.credit{background:#d1fae5;color:#065f46}.zero{background:#e2e8f0;color:#475569}
+.status{display:none;padding:10px;border-radius:10px;margin-top:10px;line-height:1.8}.status.show{display:block}.info{background:#eff6ff;color:#1e40af}.ok{background:#dcfce7;color:#166534}.err{background:#fee2e2;color:#991b1b}
+.small{font-size:12px;color:var(--muted);line-height:1.8}.hidden{display:none!important}.customer-title{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.modal{position:fixed;inset:0;background:#0f172a88;display:flex;align-items:center;justify-content:center;padding:15px;z-index:10}.modalbox{background:#fff;width:min(700px,100%);max-height:90vh;overflow:auto;border-radius:20px;padding:20px}
+@media(max-width:700px){.grid,.stats{grid-template-columns:1fr}.full{grid-column:auto}.hero{border-radius:18px}.wrap{padding:10px}}
+</style>
 </head>
 <body>
-<header class="top">
-  <div>
-    <div class="brand">TRON<span>USDT</span></div>
-    <small>کیف پول و تراکنش‌های TRC-20</small>
-  </div>
-  <button id="logout" class="ghost">خروج</button>
+<div class="wrap">
+<header class="hero">
+<h1>👥 دفتر مشتریان</h1>
+<p>سیستم ساده مشتری و حساب — ذخیره مستقیم در GitHub</p>
 </header>
 
-<main class="container">
-  <section class="hero">
-    <div>
-      <p class="eyebrow">USDT • TRON (TRC-20)</p>
-      <h1>داشبورد حساب</h1>
-      <p>واریز و برداشت فقط روی شبکه TRON.</p>
-    </div>
-    <div class="balance-card">
-      <span>موجودی قابل استفاده</span>
-      <strong id="balance">0.000000 USDT</strong>
-    </div>
-  </section>
+<section class="card">
+<details>
+<summary><b>⚙️ اتصال به GitHub</b></summary>
+<div class="grid" style="margin-top:15px">
+<div><label>GitHub Username</label><input id="owner" value="assadhzr"></div>
+<div><label>Repository</label><input id="repo" value="bahadorian"></div>
+<div><label>Branch</label><input id="branch" value="main"></div>
+<div><label>فایل داده</label><input id="path" value="customers.json"></div>
+<div class="full"><label>Fine-grained GitHub Token</label><input id="token" type="password" placeholder="github_pat_..."></div>
+</div>
+<p class="small">توکن در HTML ذخیره نمی‌شود. برای این Repository دسترسی <b>Contents: Read and write</b> لازم است. برای امنیت، توکن را در اختیار دیگران نگذارید.</p>
+<div class="actions">
+<button class="primary" onclick="connect()">ذخیره و اتصال</button>
+<button class="gray" onclick="loadFromGitHub()">🔄 دریافت اطلاعات</button>
+<button class="gray" onclick="clearToken()">پاک کردن توکن</button>
+</div>
+<div id="status" class="status"></div>
+</details>
+</section>
 
-  <section class="grid">
-    <article class="card">
-      <h2>واریز USDT</h2>
-      <p class="muted">فقط USDT روی شبکه TRON به این آدرس ارسال شود.</p>
-      <div class="address" id="depositAddress">در حال دریافت...</div>
-      <button id="copyAddress">کپی آدرس</button>
-      <p class="warning">ارسال دارایی روی شبکه یا توکن اشتباه ممکن است باعث از دست رفتن دارایی شود.</p>
-    </article>
+<section class="card">
+<div class="stats">
+<div class="stat"><small>کل مشتریان</small><b id="statCustomers">0</b></div>
+<div class="stat"><small>مجموع بدهکاری مشتریان</small><b id="statDebt">0</b></div>
+<div class="stat"><small>مجموع بستانکاری</small><b id="statCredit">0</b></div>
+<div class="stat"><small>مانده خالص</small><b id="statNet">0</b></div>
+</div>
+</section>
 
-    <article class="card">
-      <h2>برداشت USDT</h2>
-      <label>مبلغ</label>
-      <input id="withdrawAmount" type="number" min="0" step="0.000001" placeholder="مثلاً 50">
-      <label>آدرس TRON مقصد</label>
-      <input id="withdrawAddress" placeholder="T...">
-      <button id="withdrawBtn">ثبت درخواست برداشت</button>
-      <div id="withdrawMsg" class="msg"></div>
-    </article>
-  </section>
+<section class="card">
+<div class="customer-title"><h2 style="margin:0">➕ ثبت مشتری</h2></div>
+<form id="customerForm" style="margin-top:15px">
+<div class="grid">
+<div><label>نام مشتری *</label><input id="cName" required></div>
+<div><label>شماره تلفن</label><input id="cPhone" inputmode="tel"></div>
+<div><label>آدرس</label><input id="cAddress"></div>
+<div><label>توضیحات</label><input id="cNote"></div>
+</div>
+<div class="actions"><button class="primary" id="customerBtn">ثبت مشتری</button><button type="button" class="gray hidden" id="cancelCustomer" onclick="cancelCustomerEdit()">انصراف</button></div>
+</form>
+</section>
 
-  <section class="card">
-    <div class="row"><h2>تراکنش‌ها</h2><button id="refresh" class="ghost">به‌روزرسانی</button></div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>نوع</th><th>مبلغ</th><th>وضعیت</th><th>TXID</th><th>تاریخ</th></tr></thead>
-        <tbody id="transactions"></tbody>
-      </table>
-    </div>
-  </section>
-</main>
+<section class="card">
+<div class="toolbar">
+<h2 style="margin:0">📋 مشتریان</h2>
+<input class="search" id="search" placeholder="🔍 جستجوی نام یا شماره..." oninput="renderCustomers()">
+</div>
+<div class="table" style="margin-top:14px">
+<table><thead><tr><th>#</th><th>مشتری</th><th>تلفن</th><th>مانده</th><th>تاریخ</th><th>عملیات</th></tr></thead>
+<tbody id="customers"></tbody></table>
+<div id="empty" class="small" style="text-align:center;padding:30px">هنوز مشتری ثبت نشده است.</div>
+</div>
+</section>
+</div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script>
-<script src="app.js"></script>
+<div id="modal" class="modal hidden">
+<div class="modalbox">
+<div class="customer-title"><h2 id="modalTitle" style="margin:0">حساب مشتری</h2><button class="gray" onclick="closeModal()">بستن</button></div>
+<div id="accountSummary" style="margin:15px 0"></div>
+<form id="txForm">
+<div class="grid">
+<div><label>نوع تراکنش</label><select id="txType"><option value="debt">بدهکار / خرید مشتری</option><option value="payment">پرداخت مشتری</option></select></div>
+<div><label>مبلغ *</label><input id="txAmount" type="number" min="0" step="any" required></div>
+<div class="full"><label>توضیح</label><input id="txNote" placeholder="مثلاً خرید موبایل"></div>
+</div>
+<div class="actions"><button class="primary">ثبت تراکنش و ذخیره</button></div>
+</form>
+<h3>تاریخچه حساب</h3>
+<div class="table"><table><thead><tr><th>تاریخ</th><th>نوع</th><th>مبلغ</th><th>توضیح</th><th></th></tr></thead><tbody id="txs"></tbody></table></div>
+</div>
+</div>
+
+<script>
+const API="2022-11-28";
+let db={customers:[],transactions:[]};
+let sha=null,currentId=null,editingCustomer=null;
+
+const $=id=>document.getElementById(id);
+function cfg(){return {owner:$("owner").value.trim(),repo:$("repo").value.trim(),branch:$("branch").value.trim()||"main",path:$("path").value.trim()||"customers.json",token:$("token").value.trim()}}
+function loadSettings(){
+ $("owner").value=localStorage.getItem("gh_owner")||"assadhzr";
+ $("repo").value=localStorage.getItem("gh_repo")||"bahadorian";
+ $("branch").value=localStorage.getItem("gh_branch")||"main";
+ $("path").value=localStorage.getItem("gh_path")||"customers.json";
+ $("token").value=sessionStorage.getItem("gh_token")||"";
+}
+function saveSettings(){
+ let c=cfg(); localStorage.setItem("gh_owner",c.owner);localStorage.setItem("gh_repo",c.repo);localStorage.setItem("gh_branch",c.branch);localStorage.setItem("gh_path",c.path);
+ if(c.token)sessionStorage.setItem("gh_token",c.token);
+}
+function connect(){saveSettings();loadFromGitHub()}
+function clearToken(){sessionStorage.removeItem("gh_token");$("token").value="";msg("توکن از این مرورگر پاک شد.","info")}
+function url(c){return `https://api.github.com/repos/${encodeURIComponent(c.owner)}/${encodeURIComponent(c.repo)}/contents/${c.path.split("/").map(encodeURIComponent).join("/")}`}
+function headers(c){return {"Accept":"application/vnd.github+json","Authorization":"Bearer "+c.token,"X-GitHub-Api-Version":API}}
+function enc(s){let b=new TextEncoder().encode(s),x="";for(let v of b)x+=String.fromCharCode(v);return btoa(x)}
+function dec(s){let x=atob(s.replace(/\n/g,"")),b=Uint8Array.from(x,c=>c.charCodeAt(0));return new TextDecoder().decode(b)}
+async function errorMsg(r){try{let j=await r.json();return j.message||r.statusText}catch{return r.statusText}}
+
+async function loadFromGitHub(){
+ saveSettings();let c=cfg();
+ if(!c.token){msg("اول GitHub Token را وارد کنید.","err");return}
+ try{
+  msg("در حال دریافت اطلاعات...","info");
+  let r=await fetch(url(c)+"?ref="+encodeURIComponent(c.branch),{headers:headers(c)});
+  if(r.status===404){db={customers:[],transactions:[]};sha=null;renderAll();msg("customers.json هنوز ساخته نشده؛ اولین ذخیره آن را می‌سازد.","info");return}
+  if(!r.ok)throw Error(await errorMsg(r));
+  let j=await r.json();sha=j.sha;let parsed=JSON.parse(dec(j.content)||"{}");
+  db={customers:Array.isArray(parsed.customers)?parsed.customers:[],transactions:Array.isArray(parsed.transactions)?parsed.transactions:[]};
+  renderAll();msg("اطلاعات از GitHub دریافت شد.","ok");
+ }catch(e){msg("خطا: "+e.message,"err")}
+}
+async function saveToGitHub(){
+ let c=cfg();if(!c.token)throw Error("GitHub Token وارد نشده است.");
+ let body={message:"Update customers data",content:enc(JSON.stringify(db,null,2)),branch:c.branch};if(sha)body.sha=sha;
+ let r=await fetch(url(c),{method:"PUT",headers:{...headers(c),"Content-Type":"application/json"},body:JSON.stringify(body)});
+ if(!r.ok)throw Error(await errorMsg(r));let j=await r.json();sha=j.content.sha;
+}
+function msg(t,type){let x=$("status");x.textContent=t;x.className="status show "+type}
+
+$("customerForm").addEventListener("submit",async e=>{
+ e.preventDefault();let c=cfg();if(!c.token){msg("برای ذخیره Token لازم است.","err");return}
+ let data={name:$("cName").value.trim(),phone:$("cPhone").value.trim(),address:$("cAddress").value.trim(),note:$("cNote").value.trim()};
+ if(!data.name)return;
+ try{
+  if(editingCustomer){let x=db.customers.find(a=>a.id===editingCustomer);Object.assign(x,data);editingCustomer=null}
+  else db.customers.unshift({id:crypto.randomUUID(),...data,date:jalali(new Date()),createdAt:new Date().toISOString()});
+  await saveToGitHub();resetCustomer();renderAll();msg("مشتری ذخیره شد.","ok");
+ }catch(e){msg("ذخیره نشد: "+e.message,"err")}
+});
+
+function editCustomer(id){
+ let x=db.customers.find(a=>a.id===id);if(!x)return;editingCustomer=id;
+ $("cName").value=x.name;$("cPhone").value=x.phone||"";$("cAddress").value=x.address||"";$("cNote").value=x.note||"";
+ $("customerBtn").textContent="ذخیره تغییرات";$("cancelCustomer").classList.remove("hidden");scrollTo({top:0,behavior:"smooth"})
+}
+function resetCustomer(){editingCustomer=null;$("customerForm").reset();$("customerBtn").textContent="ثبت مشتری";$("cancelCustomer").classList.add("hidden")}
+function cancelCustomerEdit(){resetCustomer()}
+
+async function removeCustomer(id){
+ let x=db.customers.find(a=>a.id===id);if(!x)return;if(!confirm("مشتری و تمام تراکنش‌های او حذف شود؟"))return;
+ let old=db;db={customers:db.customers.filter(a=>a.id!==id),transactions:db.transactions.filter(a=>a.customerId!==id)};
+ try{await saveToGitHub();renderAll();msg("مشتری حذف شد.","ok")}catch(e){db=old;msg("حذف ذخیره نشد: "+e.message,"err")}
+}
+function balance(id){return db.transactions.filter(t=>t.customerId===id).reduce((s,t)=>s+(t.type==="debt"?Number(t.amount):-Number(t.amount)),0)}
+function money(n){return Number(n||0).toLocaleString("fa-IR")+" افغانی"}
+function renderAll(){renderCustomers();renderStats()}
+function renderStats(){
+ let balances=db.customers.map(c=>balance(c.id));let debt=balances.filter(x=>x>0).reduce((a,b)=>a+b,0),credit=balances.filter(x=>x<0).reduce((a,b)=>a+Math.abs(b),0);
+ $("statCustomers").textContent=db.customers.length.toLocaleString("fa-IR");$("statDebt").textContent=money(debt);$("statCredit").textContent=money(credit);$("statNet").textContent=money(debt-credit)
+}
+function renderCustomers(){
+ let q=$("search").value.trim().toLowerCase(),list=db.customers.filter(c=>(c.name+" "+c.phone).toLowerCase().includes(q));$("customers").innerHTML="";$("empty").style.display=list.length?"none":"block";
+ list.forEach((c,i)=>{let b=balance(c.id),cl=b>0?"debt":b<0?"credit":"zero",txt=b>0?"بدهکار":b<0?"بستانکار":"تسویه";
+ let tr=document.createElement("tr");tr.innerHTML=`<td>${i+1}</td><td><b>${esc(c.name)}</b><br><span class="small">${esc(c.address||"")}</span></td><td>${esc(c.phone||"—")}</td><td><span class="pill ${cl}">${txt}: ${money(Math.abs(b))}</span></td><td>${esc(c.date||"—")}</td><td><button class="green" onclick="openAccount('${c.id}')">حساب</button> <button class="gray" onclick="editCustomer('${c.id}')">ویرایش</button> <button class="red" onclick="removeCustomer('${c.id}')">حذف</button></td>`;$("customers").appendChild(tr)})
+}
+function openAccount(id){currentId=id;let c=db.customers.find(x=>x.id===id);if(!c)return;$("modalTitle").textContent="حساب: "+c.name;$("modal").classList.remove("hidden");renderAccount()}
+function closeModal(){$("modal").classList.add("hidden");currentId=null}
+function renderAccount(){
+ let b=balance(currentId),c=db.customers.find(x=>x.id===currentId);$("accountSummary").innerHTML=`<div class="grid"><div class="stat"><small>شماره</small><b>${esc(c.phone||"—")}</b></div><div class="stat"><small>مانده</small><b>${b>0?"بدهکار ":"بستانکار "}${money(Math.abs(b))}</b></div></div>`;
+ let list=db.transactions.filter(t=>t.customerId===currentId).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));$("txs").innerHTML=list.map(t=>`<tr><td>${esc(t.date)}</td><td>${t.type==="debt"?"بدهکار":"پرداخت"}</td><td>${money(t.amount)}</td><td>${esc(t.note||"—")}</td><td><button class="red" onclick="deleteTx('${t.id}')">حذف</button></td></tr>`).join("")||`<tr><td colspan="5">تراکنشی وجود ندارد.</td></tr>`
+}
+$("txForm").addEventListener("submit",async e=>{
+ e.preventDefault();let c=cfg();if(!c.token){msg("Token وارد نشده است.","err");return}
+ let amount=Number($("txAmount").value);if(!amount)return;
+ db.transactions.push({id:crypto.randomUUID(),customerId:currentId,type:$("txType").value,amount,date:jalali(new Date()),note:$("txNote").value.trim(),createdAt:new Date().toISOString()});
+ try{await saveToGitHub();$("txForm").reset();renderAll();renderAccount();msg("تراکنش ذخیره شد.","ok")}catch(e){msg("ذخیره تراکنش نشد: "+e.message,"err")}
+});
+async function deleteTx(id){
+ if(!confirm("این تراکنش حذف شود؟"))return;let old=db;db.transactions=db.transactions.filter(t=>t.id!==id);
+ try{await saveToGitHub();renderAll();renderAccount();msg("تراکنش حذف شد.","ok")}catch(e){db=old;msg("حذف ذخیره نشد: "+e.message,"err")}
+}
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function div(a,b){return Math.floor(a/b)}
+function jalali(d){
+ let gy=d.getFullYear(),gm=d.getMonth()+1,gd=d.getDate(),gdm=[0,31,59,90,120,151,181,212,243,273,304,334],gy2=gy+1,days=365*gy+div(gy2+3,4)-div(gy2+99,100)+div(gy2+399,400)+gd+gdm[gm-1];
+ if(gm>2&&((gy%4===0&&gy%100!==0)||(gy%400===0)))days++;days-=355666;let jy=-1598+33*div(days,12053);days%=12053;jy+=4*div(days,1461);days%=1461;if(days>365){jy+=div(days-1,365);days=(days-1)%365}let jm=days<186?1+div(days,31):7+div(days-186,30),jd=1+(days<186?days%31:(days-186)%30);return `${jy}/${String(jm).padStart(2,"0")}/${String(jd).padStart(2,"0")}`}
+loadSettings();renderAll();
+</script>
 </body>
 </html>
