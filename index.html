@@ -19,6 +19,7 @@ button{border:0;border-radius:11px;padding:11px 15px;font:inherit;font-weight:bo
 .modal{position:fixed;inset:0;background:#0f172a88;display:flex;align-items:center;justify-content:center;padding:15px;z-index:10}.modalbox{background:#fff;width:min(700px,100%);max-height:90vh;overflow:auto;border-radius:20px;padding:20px}
 @media(max-width:700px){.grid,.stats{grid-template-columns:1fr}.full{grid-column:auto}.hero{border-radius:18px}.wrap{padding:10px}}
 </style>
+<style id="iranSansStyle">@font-face{font-family:"IRANSans";src:local("IRANSans"),local("IRANSansWeb"),local("IRANSansX")}html,body,button,input,select,textarea,table{font-family:"IRANSans","IRANSansWeb","IRANSansX",Tahoma,Arial,sans-serif!important}</style>
 </head>
 <body>
 <div class="wrap">
@@ -58,7 +59,8 @@ button{border:0;border-radius:11px;padding:11px 15px;font:inherit;font-weight:bo
 
 <section class="card">
 <div class="customer-title"><h2 style="margin:0">➕ ثبت مشتری</h2></div>
-<form id="customerForm" style="margin-top:15px">
+<button id="openCustomerForm" class="primary" type="button" style="margin-top:12px">＋ ثبت مشتری جدید</button>
+<form id="customerForm" style="margin-top:15px;display:none">
 <div class="grid">
 <div><label>نام مشتری *</label><input id="cName" required></div>
 <div><label>شماره تلفن</label><input id="cPhone" inputmode="tel"></div>
@@ -205,5 +207,7 @@ function jalali(d){
  if(gm>2&&((gy%4===0&&gy%100!==0)||(gy%400===0)))days++;days-=355666;let jy=-1598+33*div(days,12053);days%=12053;jy+=4*div(days,1461);days%=1461;if(days>365){jy+=div(days-1,365);days=(days-1)%365}let jm=days<186?1+div(days,31):7+div(days-186,30),jd=1+(days<186?days%31:(days-186)%30);return `${jy}/${String(jm).padStart(2,"0")}/${String(jd).padStart(2,"0")}`}
 loadSettings();renderAll();
 </script>
+<script id="autoGitHubLoad">document.addEventListener("DOMContentLoaded",async()=>{const t=sessionStorage.getItem("gh_token");if(t&&typeof loadFromGitHub==="function"){try{await loadFromGitHub()}catch(e){console.warn(e)}}});</script>
+<script id="customerFormToggle">document.addEventListener("DOMContentLoaded",()=>{const b=document.getElementById("openCustomerForm"),f=document.getElementById("customerForm");if(!b||!f)return;b.onclick=()=>{const open=f.style.display!=="none";f.style.display=open?"none":"block";b.textContent=open?"＋ ثبت مشتری جدید":"✕ بستن فرم";if(!open){const x=f.querySelector("input,textarea,select");if(x)x.focus()}}});</script>
 </body>
 </html>
