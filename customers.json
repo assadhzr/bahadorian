@@ -1,0 +1,14 @@
+{
+  "customers": [
+    {
+      "id": "a2e9c9d1-4d91-42af-8ece-a31a34871ae6",
+      "name": "اسد",
+      "phone": "",
+      "address": "",
+      "note": "",
+      "date": "-546/12/12",
+      "createdAt": "2026-09-24T11:40:12.172Z"
+    }
+  ],
+  "transactions": []
+}
