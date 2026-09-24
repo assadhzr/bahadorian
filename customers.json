@@ -1,33 +1,4 @@
 {
-  "customers": [
-    {
-      "id": "a2e9c9d1-4d91-42af-8ece-a31a34871ae6",
-      "name": "اسد",
-      "phone": "",
-      "address": "",
-      "note": "",
-      "date": "-546/12/12",
-      "createdAt": "2026-09-24T11:40:12.172Z"
-    }
-  ],
-  "transactions": [
-    {
-      "id": "7bc7cef2-08e1-4a86-aaaf-cbdcea33a29f",
-      "customerId": "a2e9c9d1-4d91-42af-8ece-a31a34871ae6",
-      "type": "debt",
-      "amount": 50,
-      "date": "-546/12/12",
-      "note": "کردیت موبایل",
-      "createdAt": "2026-09-24T11:40:58.379Z"
-    },
-    {
-      "id": "aa1034ef-6543-40e0-8f0f-28376b8bf8ef",
-      "customerId": "a2e9c9d1-4d91-42af-8ece-a31a34871ae6",
-      "type": "payment",
-      "amount": 20,
-      "date": "-546/12/12",
-      "note": "",
-      "createdAt": "2026-09-24T11:50:14.971Z"
-    }
-  ]
+  "customers": [],
+  "transactions": []
 }
